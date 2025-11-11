@@ -1,0 +1,35 @@
+Bai tap 2:
+Khi gọi execlp() (hoặc bất kỳ hàm exec nào), tiến trình con sẽ bị thay thế hoàn toàn bởi chương trình mới mà bạn chỉ định (ví dụ: ls hoặc date). Điều này có nghĩa là:
+
+Không gian địa chỉ của tiến trình con sẽ bị thay thế hoàn toàn. Bộ nhớ của tiến trình con (bao gồm các biến cục bộ, dữ liệu stack, heap, v.v.) sẽ bị xoá và thay thế bằng bộ nhớ của chương trình mới.
+
+Mã lệnh: Mã lệnh của tiến trình con sẽ không được thực thi nữa. Sau khi gọi exec(), mã của tiến trình con sẽ bị thay thế hoàn toàn bằng mã của chương trình mới.
+
+Tiến trình mới sẽ sử dụng một ID tiến trình (PID) mới, nhưng PID của tiến trình cha sẽ không thay đổi.
+
+Dữ liệu môi trường (như MY_COMMAND) vẫn được duy trì trong tiến trình mới (nếu cần), bởi vì biến môi trường được truyền sang chương trình mới trong quá trình gọi exec().
+Bai tap 3:
++ Zombie:
+    Xảy ra khi tiến trình con kết thúc (exit) trước, nhưng tiến trình cha chưa gọi wait() hoặc waitpid() để thu hồi (reap) thông tin của tiến trình con.
+
+    Khi đó, tiến trình con đã chết về mặt thực thi, nhưng thông tin của nó vẫn còn trong bảng tiến trình (process table) — bao gồm PID, mã thoát (exit status), tài nguyên thống kê, v.v.
+
+    Kernel giữ lại thông tin này để tiến trình cha có thể đọc kết quả sau này.
+
+    Trạng thái Zombie là một giai đoạn tạm thời — cần thiết để tiến trình cha nhận được mã thoát (exit code) của tiến trình con.
+
+    Tuy nhiên, nếu tiến trình cha không bao giờ gọi wait(), các zombie này tồn tại mãi trong bảng tiến trình, gây rò rỉ tài nguyên kernel (vì mỗi zombie vẫn chiếm một PID).
+
+    Nếu tiến trình cha kết thúc, hệ điều hành sẽ gán các zombie này cho init (PID=1) để dọn dẹp (reap) tự động.
++ Orphan:
+    Xuất hiện khi tiến trình cha kết thúc (exit) trước, còn tiến trình con vẫn đang chạy.
+
+    Khi đó, tiến trình con không còn cha hợp lệ, nên hệ điều hành sẽ tự động gán lại cha của nó là tiến trình init (hoặc systemd).
+
+    init có nhiệm vụ quản lý và thu hồi (wait) khi con thực sự kết thúc, đảm bảo không để lại zombie.
+
+    Hệ điều hành Linux không bao giờ để một tiến trình “mồ côi” thực sự.
+
+    init hoặc systemd luôn nhận trách nhiệm làm cha mới, để đảm bảo quản lý tài nguyên và dọn dẹp tiến trình con khi chúng kết thúc.
+
+    Do đó, orphan không gây rò rỉ như zombie, vì sẽ được dọn dẹp đúng cách.
