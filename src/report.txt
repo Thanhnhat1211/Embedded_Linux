@@ -1,0 +1,21 @@
+THREAD:
+    pthread_create() là hàm tạo thread trong đó chúng ta truyền vào 4 tham số lần lượt là địa chỉ lưu trữ ID của 
+thread, tham số thứ 2 thường là NULL và không quan tâm, tham số thứ 3 sẽ là hàm xử lý thread đó (ví dụ 
+khi ta tạo ra thread thì thread đó phải thực hiện chức năng gì đó thì tham số thứ 3 sẽ cho biết hàm nào
+thực hiện chức năng của thread đó), tham số cuối cùng là "arg" đây là tham số cần thiết khi tạo thread nhằm
+phân biệt các thread khác nhau.
+
+    pthread_join() là hàm mà Main thread sẽ block tại pthread_join() cho đến khi: Thread tid được gọi pthread_exit()
+hoặc thread kết thúc khi return khỏi thread handler.
+
+Sau khi join thành công:
+Thread sẽ được “thu gom lại” (reaped)
+Không còn ở trạng thái zombie thread
+
+MUTEX:
+    Khi chúng ta đọc một giá trị từ biến global chúng ta sẽ load biến đó lên thanh ghi và tính toán sau đó
+load lại xuống bộ nhớ, nếu không sử dụng mutex để lock biến đó lại các thread có thể sẽ ghi đè lên nhau làm sai 
+giá trị, ví dụ: nếu biến global counter có giá trị là 100 thì khi load lên thanh ghi Thread A sẽ + 1 tăng lên 101
+, tuy nhiên nếu chúng ta không lock mutex Thread B lúc này cũng sẽ truy cập bộ nhớ và lấy giá trị 100 lên và +1 
+cũng sẽ là 101, khi đó cả 2 thread đều load lại vào bộ nhớ và giá trị sẽ chỉ là 101 mặc dù theo mong muốn sẽ là 102
+vì vậy khi 1 thread sử dụng biến đó ta phải lock lại để các thread khác đợi đến khi unlock mới được thao tác với biến đó
