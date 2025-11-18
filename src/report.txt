@@ -1,0 +1,32 @@
+Câu hỏi: Nếu bỏ qua tín hiệu SIGINT thì điều gì xảy ra?
+
+    signal(SIGINT, SIG_IGN);
+    "Ignore" tín hiệu.
+    Khi nhấn Ctrl+C chương trình không bị dừng, vì SIGINT bị bỏ qua.
+
+    Tác dụng:
+    Terminal gửi SIGINT → chương trình làm ngơ.
+    Bạn sẽ không thể dùng Ctrl+C để dừng chương trình đó.
+
+    Muốn dừng phải dùng:
+    kill -9 <PID> hoặc đóng terminal.
+
+Câu hỏi: Điều gì xảy ra nếu không gọi lại alarm(1) trong hàm xử lý?
+    Bộ đếm sẽ chỉ chạy đúng 1 lần rồi dừng hẳn.
+    Vì:
+    alarm(1) chỉ đặt thời gian kích hoạt một lần duy nhất.
+    Sau khi SIGALRM xảy ra lần đầu, nếu không gọi lại alarm(1) thì không có lần thứ hai, không có tiếp tục đếm giây.
+
+Câu hỏi: Tại sao phải dùng kill() để gửi tín hiệu?
+    Vì kill() là hàm tiêu chuẩn để gửi tín hiệu đến một process khác.
+
+    Dùng kill(pid, SIGUSR1) cho phép:
+    Gửi tín hiệu trực tiếp đến PID của tiến trình con.
+    Cha biết PID con qua fork(), vì vậy có thể gửi tín hiệu chính xác.
+    kill không “giết” process khi tín hiệu là SIGUSR1
+    Nó chỉ gửi tín hiệu theo yêu cầu của bài.
+
+    Không có hàm nào khác thay thế trong giao tiếp tín hiệu
+    raise() chỉ gửi tín hiệu cho chính process đang chạy
+    pthread_kill() gửi tín hiệu cho thread, không phải tiến trình alarm() chỉ gửi SIGALRM cho chính process
+    Vì vậy, kill() là công cụ duy nhất phù hợp để process cha gửi tín hiệu cho process con.
