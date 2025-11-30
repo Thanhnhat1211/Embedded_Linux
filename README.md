@@ -90,7 +90,3 @@ Socket là nền tảng của:
 * Giao tiếp IPC hiệu quả giữa các process
 
 ⚡ **Nắm vững socket = hiểu cách Internet hoạt động + hiểu hệ thống bên trong.**
-
----
-
-Nếu cần mình viết thêm **diagram kiến trúc** hoặc **mục lục báo cáo**, cứ nói nhé! 🚀
